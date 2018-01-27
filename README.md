@@ -9,8 +9,8 @@ ROJO-VERDE-AZUL una y otra vez. El Timer debe estar configurado por interrupció
 
 Configurar el SW2 por interrupción para que la secuencia pare y el led se quede estático en el color en el que estaba al presionar el switch.
 
-            Configurar el SW3 por interrupción para que la secuencia cambie de sentido: si la secuencia era ROJO-VERDE-AZUL, después de presionar el switch ahora será AZUL-VERDE-ROJO. De la misma manera para cuando está en el estado AZUL-VERDE-ROJO, al presionar el switch la secuencia cambiará a ROJO-VERDE-AZUL.
+Configurar el SW3 por interrupción para que la secuencia cambie de sentido: si la secuencia era ROJO-VERDE-AZUL, después de presionar el switch ahora será AZUL-VERDE-ROJO. De la misma manera para cuando está en el estado AZUL-VERDE-ROJO, al presionar el switch la secuencia cambiará a ROJO-VERDE-AZUL.
 
-              Esta prohibido modificar registros directamente, todo debe ser a través del SDK.
+Esta prohibido modificar registros directamente, todo debe ser a través del SDK.
 
-              Sube aquí un link a tu repositorio de github donde pueda ver tu solución. La calificación estará en base al último commit antes de la fecha de entrega. Si no hay ningún commit en el repositorio antes de la fecha de entrega la tarea no es válida.
+Sube aquí un link a tu repositorio de github donde pueda ver tu solución. La calificación estará en base al último commit antes de la fecha de entrega. Si no hay ningún commit en el repositorio antes de la fecha de entrega la tarea no es válida.
