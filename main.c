@@ -41,6 +41,7 @@
 #include "fsl_debug_console.h"
 #include "fsl_port.h"
 #include "fsl_gpio.h"
+//#include "fsl_pit.h"
 #include "leds.h"
 /* TODO: insert other include files here. */
 
@@ -70,33 +71,35 @@ int main(void) {
     CLOCK_EnableClock(kCLOCK_PortC);
     CLOCK_EnableClock(kCLOCK_PortE);
 
+    //PID_Init();
+
     // Input pin PORT configuration P-833 SDK
     const port_pin_config_t config =
-		{
-			kPORT_PullDisable,
-			kPORT_FastSlewRate,
-			kPORT_PassiveFilterDisable,
-			kPORT_OpenDrainDisable,
-			kPORT_LowDriveStrength,
-			kPORT_MuxAsGpio,
-			kPORT_UnlockRegister,
-		};
+			{
+				kPORT_PullDisable,
+				kPORT_FastSlewRate,
+				kPORT_PassiveFilterDisable,
+				kPORT_OpenDrainDisable,
+				kPORT_LowDriveStrength,
+				kPORT_MuxAsGpio,
+				kPORT_UnlockRegister,
+			};
 	const port_pin_config_t config_switch =
-		{
-			kPORT_PullDisable,
-			kPORT_FastSlewRate,
-			kPORT_PassiveFilterDisable,
-			kPORT_OpenDrainDisable,
-			kPORT_LowDriveStrength,
-			kPORT_MuxAsGpio,
-			kPORT_UnlockRegister,
-		  };
+			{
+				kPORT_PullDisable,
+				kPORT_FastSlewRate,
+				kPORT_PassiveFilterDisable,
+				kPORT_OpenDrainDisable,
+				kPORT_LowDriveStrength,
+				kPORT_MuxAsGpio,
+				kPORT_UnlockRegister,
+			  };
 
 	// Sets the configuration
 	//configure LEDs
-    PORT_SetPinConfig(PORTB, 21, &config);
-    PORT_SetPinConfig(PORTB, 22, &config);
-    PORT_SetPinConfig(PORTE, 26, &config);
+    PORT_SetPinConfig(PORTB, 21, &config);//BLUE
+    PORT_SetPinConfig(PORTB, 22, &config);//RED
+    PORT_SetPinConfig(PORTE, 26, &config);//GREEN
     //configure Switches
     PORT_SetPinConfig(PORTA, 4, &config_switch);//SW3
     PORT_SetPinConfig(PORTC, 6, &config_switch);//SW2
@@ -112,6 +115,7 @@ int main(void) {
 			kGPIO_DigitalInput,//configurar como output
 			1,//valor default
 		  };
+
     // Sets the configuration
     GPIO_PinInit(GPIOB, 21, &led_config);
     GPIO_PinInit(GPIOA, 4, &switch_config);
