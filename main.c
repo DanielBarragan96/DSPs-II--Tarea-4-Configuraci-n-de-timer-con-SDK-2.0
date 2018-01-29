@@ -41,11 +41,16 @@
 #include "fsl_debug_console.h"
 #include "fsl_port.h"
 #include "fsl_gpio.h"
-//#include "fsl_pit.h"
+#include "fsl_pit.h"
 #include "leds.h"
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
+
+void PIT0_IRQHandler(void)
+{
+	updateLeds();
+}
 
 void PORTC_IRQHandler()
 {
@@ -71,7 +76,9 @@ int main(void) {
     CLOCK_EnableClock(kCLOCK_PortC);
     CLOCK_EnableClock(kCLOCK_PortE);
 
-    //PID_Init();
+    //pit_config_t pit_config;
+    //PIT_Init();
+    //PIT_SetTimerPeriod();//cycles
 
     // Input pin PORT configuration P-833 SDK
     const port_pin_config_t config =
@@ -118,9 +125,15 @@ int main(void) {
 
     // Sets the configuration
     GPIO_PinInit(GPIOB, 21, &led_config);
+    GPIO_PinInit(GPIOB, 22, &led_config);
+    GPIO_PinInit(GPIOE, 26, &led_config);
     GPIO_PinInit(GPIOA, 4, &switch_config);
+    GPIO_PinInit(GPIOC, 6, &switch_config);
 
+    //enable switches interrupt
     PORT_SetPinInterruptConfig(PORTA, 4, kPORT_InterruptFallingEdge);
+    PORT_SetPinInterruptConfig(PORTC, 6, kPORT_InterruptFallingEdge);
+
     NVIC_EnableIRQ(PORTA_IRQn);
 
     /* Enter an infinite loop, just incrementing a counter. */

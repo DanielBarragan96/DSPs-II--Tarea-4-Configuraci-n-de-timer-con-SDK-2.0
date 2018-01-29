@@ -52,7 +52,7 @@ BooleanType changeColor();
 /********************************************************************************************/
 /********************************************************************************************/
 /*!
- 	 \brief	 Function to change the status of the LEDs
+ 	 \brief	 Function to change the status of the LEDs from start to stop
  	 \return TRUE if there was no problem
  */
 BooleanType ToogleLedStatus();

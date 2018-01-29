@@ -56,7 +56,8 @@ BooleanType changeColor()
 
 BooleanType ToogleLedStatus()
 {
-
+	g_leds_status = ( g_leds_status == RUN) ? STOP : RUN;
+	//TODO Stop/Start PIT
 	return TRUE;//there was no error
 }
 
