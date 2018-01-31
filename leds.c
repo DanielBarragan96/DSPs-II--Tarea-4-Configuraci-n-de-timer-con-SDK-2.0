@@ -11,7 +11,7 @@ static volatile BooleanType g_reverse = FALSE;
 static volatile Status g_leds_status = RUN;
 //indicates the current color
 static volatile Color g_current_color = RED;
-
+//base for stop/start the pit
 static PIT_Type* base;
 
 //Finite state machine to store the colors sequence
