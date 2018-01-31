@@ -51,6 +51,9 @@
 #define PERIOD 2.00
 //pit number to count
 #define LDVAL_trigger  (((ufloat32) PERIOD/(1/(SYSTEM_CLOCK/2))) - 1)
+//for interruptions
+#define PORTC_IRQ_MASK 6
+#define PORTA_IRQ_MASK 4
 //pit configuration
 static PIT_Type base_pit = {
 	0x00, //MCR configure clocks
@@ -67,11 +70,19 @@ void PIT0_IRQHandler(void)
 {//handle the pit interrupt, change led color
 	updateLeds();
 	PIT_SetTimerPeriod(&base_pit, kPIT_Chnl_0, LDVAL_trigger);//cycles
+	PIT_ClearStatusFlags(&base_pit, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
+	PIT_StartTimer(&base_pit, kPIT_Chnl_0);
 }
 
 void PORTC_IRQHandler()
 {//when switch 2 is pressed
-	PORT_ClearPinsInterruptFlags (PORTA, 1<<4);//clear irq
+	PORT_ClearPinsInterruptFlags (PORTC, 1<<PORTC_IRQ_MASK);//clear irq
+	ToogleLedStatus();//change led to stop/run
+}
+
+void PORTA_IRQHandler()
+{//when switch 2 is pressed
+	PORT_ClearPinsInterruptFlags (PORTA, 1<<PORTA_IRQ_MASK);//clear irq
 	ToogleLedStatus();//change led to stop/run
 }
 
