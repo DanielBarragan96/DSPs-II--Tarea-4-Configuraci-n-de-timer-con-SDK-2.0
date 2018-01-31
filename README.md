@@ -1,4 +1,5 @@
 # DSPs-II--Tarea-4-Configuraci-n-de-timer-con-SDK-2.0
+#Daniel Barragán Alvarez IE702554
 
 DSPs II
 Usa el SDK en la K64 para hacer un programa que cumpla con los siguientes puntos:
