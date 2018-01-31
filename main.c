@@ -30,7 +30,7 @@
  
 /**
  * @file    Tarea4-Timer.c
- * @brief   Application entry point.
+ * @brief   Show a sequence of colors in the leds.
  */
 #include <stdio.h>
 #include "board.h"
@@ -43,21 +43,17 @@
 #include "fsl_gpio.h"
 #include "fsl_pit.h"
 #include "leds.h"
-/* TODO: insert other include files here. */
-
-/* TODO: insert other definitions and declarations here. */
 
 void PIT0_IRQHandler(void)
-{
+{//handle the pit interrupt, change led color
 	updateLeds();
 }
 
 void PORTC_IRQHandler()
-{
-	PORT_ClearPinsInterruptFlags (PORTA, 1<<4);//clear interrupt
-	ToogleLedStatus();
+{//when switch 2 is pressed
+	PORT_ClearPinsInterruptFlags (PORTA, 1<<4);//clear irq
+	ToogleLedStatus();//change led to stop/run
 }
-
 
 /*
  * @brief   Application entry point.
@@ -76,6 +72,7 @@ int main(void) {
     CLOCK_EnableClock(kCLOCK_PortC);
     CLOCK_EnableClock(kCLOCK_PortE);
 
+    //TODO PIT
     //pit_config_t pit_config;
     //PIT_Init();
     //PIT_SetTimerPeriod();//cycles
@@ -134,6 +131,7 @@ int main(void) {
     PORT_SetPinInterruptConfig(PORTA, 4, kPORT_InterruptFallingEdge);
     PORT_SetPinInterruptConfig(PORTC, 6, kPORT_InterruptFallingEdge);
 
+    //enable interruptions
     NVIC_EnableIRQ(PORTA_IRQn);
 
     /* Enter an infinite loop, just incrementing a counter. */
