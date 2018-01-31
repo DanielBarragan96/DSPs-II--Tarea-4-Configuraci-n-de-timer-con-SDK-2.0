@@ -6,6 +6,8 @@
 #define LEDS_H_
 
 #include "DataTypeDefinitions.h"
+#include "stdbool.h"
+#include "fsl_pit.h"
 
 #define STATE_MACHINE_SIZE 3 // size of the state machine
 
@@ -19,8 +21,8 @@ typedef enum
 /* This definition is used to indicate whether the LEDs are changing or not */
 typedef enum
 {
-	RUN,
-	STOP
+	RUN = true,
+	STOP = false
 }Status;
 /* This definition is used to indicate if the led is on or off */
 typedef enum
@@ -70,6 +72,14 @@ BooleanType ToogleLedStatus();
  	 \return TRUE if there was no problem
  */
 Status getLedStatus();
+/***************************************************************************/
+/***************************************************************************/
+/***************************************************************************/
+/*!
+ 	 \brief Initialize variables for this module
+ 	 \return TRUE if there was no problem
+ */
+BooleanType InitLedsPit(PIT_Type* base_pit);
 /***************************************************************************/
 /***************************************************************************/
 /***************************************************************************/

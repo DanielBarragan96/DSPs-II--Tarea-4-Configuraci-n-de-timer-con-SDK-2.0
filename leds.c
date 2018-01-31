@@ -2,6 +2,7 @@
 #include "leds.h"
 #include "fsl_gpio.h"
 #include "MK64F12.h"
+#include "fsl_pit.h"
 
 //Global variables with initial values
 //indicates when sequence is reversed
@@ -10,6 +11,8 @@ static volatile BooleanType g_reverse = FALSE;
 static volatile Status g_leds_status = RUN;
 //indicates the current color
 static volatile Color g_current_color = RED;
+
+static PIT_Type* base;
 
 //Finite state machine to store the colors sequence
 const Leds_sequence g_fsm_moore[] =
@@ -64,14 +67,29 @@ BooleanType changeColor()
 
 BooleanType ToogleLedStatus()
 {
-	g_leds_status = ( g_leds_status == RUN) ? STOP : RUN;
-	//TODO Stop/Start PIT
+	if(g_leds_status)
+	{
+		g_leds_status = STOP;//change leds status
+		PIT_StopTimer(base, kPIT_Chnl_0);//stop the pit
+	}
+	else
+	{
+		g_leds_status = RUN;//change leds status
+		PIT_StartTimer(base, kPIT_Chnl_0);//start the pit
+	}
+
 	return TRUE;//there was no error
 }
 
 Status getLedStatus()
 {
 	return g_leds_status;//there was no error
+}
+
+BooleanType InitLedsPit(PIT_Type* base_pit)
+{
+	base = base_pit;
+	return TRUE;
 }
 
 BooleanType turnLedsOff()
