@@ -1,5 +1,7 @@
 
 #include "leds.h"
+#include "fsl_gpio.h"
+#include "MK64F12.h"
 
 //Global variables with initial values
 static volatile BooleanType g_reverse = FALSE;
@@ -29,21 +31,24 @@ BooleanType updateLeds()
 
 BooleanType changeColor()
 {
-	//TODO Turn leds off
+	turnLedsOff();
 
 	switch (g_current_color)
 		{
-			GREEN:
+		case GREEN:
 			{
-
+				GPIO_PinWrite(GPIOB, 21, LED_ON);
+				break;
 			}
-			RED:
+		case RED:
 			{
-
+				GPIO_PinWrite(GPIOB, 22, LED_ON);
+				break;
 			}
-			BLUE:
+		case BLUE:
 			{
-
+				GPIO_PinWrite(GPIOE, 26, LED_ON);
+				break;
 			}
 			default:
 			{
@@ -56,11 +61,20 @@ BooleanType changeColor()
 
 BooleanType ToogleLedStatus()
 {
-
+	g_leds_status = ( g_leds_status == RUN) ? STOP : RUN;
+	//TODO Stop/Start PIT
 	return TRUE;//there was no error
 }
 
 Status getLedStatus()
 {
 	return g_leds_status;//there was no error
+}
+
+BooleanType turnLedsOff()
+{
+	GPIO_PinWrite(GPIOB, 21, LED_OFF);
+	GPIO_PinWrite(GPIOB, 22, LED_OFF);
+	GPIO_PinWrite(GPIOE, 26, LED_OFF);
+	return TRUE;
 }
