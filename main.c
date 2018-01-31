@@ -43,15 +43,46 @@
 #include "fsl_gpio.h"
 #include "fsl_pit.h"
 #include "leds.h"
+#include "stdbool.h"
+
+//the system clock of the Kinetis
+#define SYSTEM_CLOCK 21000000.00
+//period for the pit to get 1 second
+#define PERIOD 2.00
+//pit number to count
+#define LDVAL_trigger  (((ufloat32) PERIOD/(1/(SYSTEM_CLOCK/2))) - 1)
+//for interruptions
+#define PORTC_IRQ_MASK 6
+#define PORTA_IRQ_MASK 4
+//pit configuration
+static PIT_Type base_pit = {
+	0x00, //MCR configure clocks
+	{0},//RESERVED_O
+	{
+		{LDVAL_trigger},//LDVAL valor del periodo
+		{0},//CVAL
+		{PIT_TCTRL_TEN_MASK},//TCTRL habilitar timer e interrupciones
+		{PIT_TCTRL_TIE_MASK}//TFLG
+	}
+};
 
 void PIT0_IRQHandler(void)
 {//handle the pit interrupt, change led color
 	updateLeds();
+	PIT_SetTimerPeriod(&base_pit, kPIT_Chnl_0, LDVAL_trigger);//cycles
+	PIT_ClearStatusFlags(&base_pit, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
+	PIT_StartTimer(&base_pit, kPIT_Chnl_0);
 }
 
 void PORTC_IRQHandler()
 {//when switch 2 is pressed
-	PORT_ClearPinsInterruptFlags (PORTA, 1<<4);//clear irq
+	PORT_ClearPinsInterruptFlags (PORTC, 1<<PORTC_IRQ_MASK);//clear irq
+	ToogleLedStatus();//change led to stop/run
+}
+
+void PORTA_IRQHandler()
+{//when switch 2 is pressed
+	PORT_ClearPinsInterruptFlags (PORTA, 1<<PORTA_IRQ_MASK);//clear irq
 	ToogleLedStatus();//change led to stop/run
 }
 
@@ -61,7 +92,8 @@ void PORTC_IRQHandler()
 int main(void) {
 
   	/* Init board hardware. */
-    BOARD_InitBootPins();
+
+	BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
   	/* Init FSL debug console. */
@@ -71,11 +103,7 @@ int main(void) {
     CLOCK_EnableClock(kCLOCK_PortB);
     CLOCK_EnableClock(kCLOCK_PortC);
     CLOCK_EnableClock(kCLOCK_PortE);
-
-    //TODO PIT
-    //pit_config_t pit_config;
-    //PIT_Init();
-    //PIT_SetTimerPeriod();//cycles
+    CLOCK_EnableClock(kCLOCK_Pit0);
 
     // Input pin PORT configuration P-833 SDK
     const port_pin_config_t config =
@@ -98,6 +126,10 @@ int main(void) {
 				kPORT_MuxAsGpio,
 				kPORT_UnlockRegister,
 			  };
+
+    //PIT enable debug
+    pit_config_t pit_config = { true };
+	PIT_GetDefaultConfig(&pit_config);
 
 	// Sets the configuration
 	//configure LEDs
@@ -127,17 +159,32 @@ int main(void) {
     GPIO_PinInit(GPIOA, 4, &switch_config);
     GPIO_PinInit(GPIOC, 6, &switch_config);
 
+
+    //PIT configuration
+    PIT_Init(&base_pit, &pit_config);
+    ///cycles
+    PIT_SetTimerPeriod(&base_pit, kPIT_Chnl_0, (uint32_t) LDVAL_trigger);
+
     //enable switches interrupt
     PORT_SetPinInterruptConfig(PORTA, 4, kPORT_InterruptFallingEdge);
     PORT_SetPinInterruptConfig(PORTC, 6, kPORT_InterruptFallingEdge);
 
+    PIT_EnableInterrupts(&base_pit, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
+    PIT_ClearStatusFlags(&base_pit, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
+    PIT_StartTimer(&base_pit, kPIT_Chnl_0);
+
     //enable interruptions
     NVIC_EnableIRQ(PORTA_IRQn);
+
+    //turn red led on
+    GPIO_PinWrite(GPIOB, 22, LED_ON);
+
+    InitLedsPit(&base_pit);
 
     /* Enter an infinite loop, just incrementing a counter. */
     while(1)
     {
-
+    	
     }
     return 0 ;
 }
