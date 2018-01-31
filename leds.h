@@ -23,6 +23,12 @@ typedef enum
 	STOP
 }Status;
 
+typedef enum
+{
+	LED_ON = 0,
+	LED_OFF = 1
+}Led;
+
 typedef struct
 {
 	Color next;
@@ -64,5 +70,13 @@ BooleanType ToogleLedStatus();
  	 \return TRUE if there was no problem
  */
 Status getLedStatus();
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 This function turns the LEDs in the Kinetis off.
+ 	 \return TRUE if there was no problem
+ */
+BooleanType turnLedsOff();
 
 #endif //LEDS_H_
