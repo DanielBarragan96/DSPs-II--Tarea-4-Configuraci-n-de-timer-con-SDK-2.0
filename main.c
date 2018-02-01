@@ -168,8 +168,11 @@ int main(void) {
     //enable switches interrupt
     PORT_SetPinInterruptConfig(PORTA, 4, kPORT_InterruptFallingEdge);
     PORT_SetPinInterruptConfig(PORTC, 6, kPORT_InterruptFallingEdge);
-
-    EnableIRQ(PIT0_IRQn);
+    
+	EnableIRQ(PORTC_IRQn);
+        EnableIRQ(PORTA_IRQn);
+        EnableIRQ(PIT0_IRQn);
+	
     PIT_EnableInterrupts(&base_pit, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
     PIT_ClearStatusFlags(&base_pit, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
     PIT_StartTimer(&base_pit, kPIT_Chnl_0);
