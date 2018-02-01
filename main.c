@@ -168,10 +168,6 @@ int main(void) {
     //enable switches interrupt
     PORT_SetPinInterruptConfig(PORTA, 4, kPORT_InterruptFallingEdge);
     PORT_SetPinInterruptConfig(PORTC, 6, kPORT_InterruptFallingEdge);
-    
-	EnableIRQ(PORTC_IRQn);
-        EnableIRQ(PORTA_IRQn);
-        EnableIRQ(PIT0_IRQn);
 	
     PIT_EnableInterrupts(&base_pit, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
     PIT_ClearStatusFlags(&base_pit, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
@@ -179,6 +175,8 @@ int main(void) {
 
     //enable interruptions
     NVIC_EnableIRQ(PORTA_IRQn);
+    NVIC_EnableIRQ(PORTC_IRQn);
+    NVIC_EnableIRQ(PIT0_IRQn);
 
     //turn red led on
     GPIO_PinWrite(GPIOB, 22, LED_ON);
