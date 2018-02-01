@@ -166,6 +166,7 @@ int main(void) {
     //enable interruptions
     NVIC_EnableIRQ(PORTA_IRQn);
     NVIC_EnableIRQ(PORTC_IRQn);
+  
     EnableIRQ(PIT0_IRQn);
     PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
     PIT_ClearStatusFlags(PIT, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
