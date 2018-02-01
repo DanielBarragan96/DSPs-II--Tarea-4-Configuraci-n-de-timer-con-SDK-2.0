@@ -11,8 +11,6 @@ static volatile BooleanType g_reverse = FALSE;
 static volatile Status g_leds_status = RUN;
 //indicates the current color
 static volatile Color g_current_color = RED;
-//base for stop/start the pit
-static PIT_Type* base;
 
 //Finite state machine to store the colors sequence
 const Leds_sequence g_fsm_moore[] =
@@ -21,6 +19,12 @@ const Leds_sequence g_fsm_moore[] =
 		{BLUE, RED},//for second color (green)
 		{RED, GREEN}//for third color (blue)
 };
+
+BooleanType toogleReverse()
+{//toggle the value of g_reverse
+	g_reverse = ((g_reverse) ? 0 : 1);
+	return TRUE;
+}
 
 BooleanType updateLeds()
 {
@@ -70,12 +74,12 @@ BooleanType ToogleLedStatus()
 	if(g_leds_status)
 	{
 		g_leds_status = STOP;//change leds status
-		PIT_StopTimer(base, kPIT_Chnl_0);//stop the pit
+		PIT_StopTimer(PIT, kPIT_Chnl_0);//stop the pit
 	}
 	else
 	{
 		g_leds_status = RUN;//change leds status
-		PIT_StartTimer(base, kPIT_Chnl_0);//start the pit
+		PIT_StartTimer(PIT, kPIT_Chnl_0);//start the pit
 	}
 
 	return TRUE;//there was no error
@@ -84,12 +88,6 @@ BooleanType ToogleLedStatus()
 Status getLedStatus()
 {
 	return g_leds_status;//there was no error
-}
-
-BooleanType InitLedsPit(PIT_Type* base_pit)
-{
-	base = base_pit;
-	return TRUE;
 }
 
 BooleanType turnLedsOff()
