@@ -54,6 +54,14 @@
 //for interruptions
 #define PORTC_IRQ_MASK 6
 #define PORTA_IRQ_MASK 4
+//PINS constants
+#define BLUE_LED_PIN 21
+#define RED_LED_PIN 22 
+#define GREEN_LED_PIN 26
+#define SW2_PIN 6
+#define SW3_PIN 4
+
+
 void PIT0_IRQHandler(void)
 {//handle the pit interrupt, change led color
 	updateLeds();
@@ -117,12 +125,12 @@ int main(void) {
 
 	// Sets the configuration
 	//configure LEDs
-    PORT_SetPinConfig(PORTB, 21, &config);//BLUE
-    PORT_SetPinConfig(PORTB, 22, &config);//RED
-    PORT_SetPinConfig(PORTE, 26, &config);//GREEN
+    PORT_SetPinConfig(PORTB, BLUE_LED_PIN, &config);//BLUE
+    PORT_SetPinConfig(PORTB, RED_LED_PIN, &config);//RED
+    PORT_SetPinConfig(PORTE, GREEN_LED_PIN, &config);//GREEN
     //configure Switches
-    PORT_SetPinConfig(PORTA, 4, &config_switch);//SW3
-    PORT_SetPinConfig(PORTC, 6, &config_switch);//SW2
+    PORT_SetPinConfig(PORTA, SW3_PIN, &config_switch);//SW3
+    PORT_SetPinConfig(PORTC, SW2_PIN, &config_switch);//SW2
 
     //Output pin configuration
     const gpio_pin_config_t led_config =
@@ -137,11 +145,11 @@ int main(void) {
 		  };
 
     // Sets the configuration
-    GPIO_PinInit(GPIOB, 21, &led_config);
-    GPIO_PinInit(GPIOB, 22, &led_config);
-    GPIO_PinInit(GPIOE, 26, &led_config);
-    GPIO_PinInit(GPIOA, 4, &switch_config);
-    GPIO_PinInit(GPIOC, 6, &switch_config);
+    GPIO_PinInit(GPIOB, BLUE_LED_PIN, &led_config);
+    GPIO_PinInit(GPIOB, RED_LED_PIN, &led_config);
+    GPIO_PinInit(GPIOE, GREEN_LED_PIN, &led_config);
+    GPIO_PinInit(GPIOA, SW3_PIN, &switch_config);
+    GPIO_PinInit(GPIOC, SW2_PIN, &switch_config);
 
     //PIT enable debug
     pit_config_t pit_config;
@@ -152,8 +160,8 @@ int main(void) {
     PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, (uint32_t) LDVAL_trigger);
 
     //enable switches interrupt
-    PORT_SetPinInterruptConfig(PORTA, 4, kPORT_InterruptFallingEdge);
-    PORT_SetPinInterruptConfig(PORTC, 6, kPORT_InterruptFallingEdge);
+    PORT_SetPinInterruptConfig(PORTA, SW3_PIN, kPORT_InterruptFallingEdge);
+    PORT_SetPinInterruptConfig(PORTC, SW2_PIN, kPORT_InterruptFallingEdge);
 
     //enable interruptions
     NVIC_EnableIRQ(PORTA_IRQn);
@@ -164,7 +172,7 @@ int main(void) {
     PIT_StartTimer(PIT, kPIT_Chnl_0);
 
     //turn red led on
-    GPIO_PinWrite(GPIOB, 22, LED_ON);
+    GPIO_PinWrite(GPIOB, RED_LED_PIN, LED_ON);
 
     /* Enter an infinite loop, just incrementing a counter. */
     while(1)

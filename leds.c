@@ -21,7 +21,7 @@ const Leds_sequence g_fsm_moore[] =
 };
 
 BooleanType toogleReverse()
-{
+{//toggle the value of g_reverse
 	g_reverse = ((g_reverse) ? 0 : 1);
 	return TRUE;
 }
