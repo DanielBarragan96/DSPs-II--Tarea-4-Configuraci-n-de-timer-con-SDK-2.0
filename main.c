@@ -46,32 +46,20 @@
 #include "stdbool.h"
 
 //the system clock of the Kinetis
-#define SYSTEM_CLOCK 21000000.00
+#define SYSTEM_CLOCK CLOCK_GetBusClkFreq()
 //period for the pit to get 1 second
 #define PERIOD 2.00
 //pit number to count
-#define LDVAL_trigger  (((ufloat32) PERIOD/(1/(SYSTEM_CLOCK/2))) - 1)
+#define LDVAL_trigger  (SYSTEM_CLOCK * PERIOD)
 //for interruptions
 #define PORTC_IRQ_MASK 6
 #define PORTA_IRQ_MASK 4
-//pit configuration
-static PIT_Type base_pit = {
-	0x00, //MCR configure clocks
-	{0},//RESERVED_O
-	{
-		{LDVAL_trigger},//LDVAL valor del periodo
-		{0},//CVAL
-		{PIT_TCTRL_TEN_MASK},//TCTRL habilitar timer e interrupciones
-		{PIT_TCTRL_TIE_MASK}//TFLG
-	}
-};
-
 void PIT0_IRQHandler(void)
 {//handle the pit interrupt, change led color
 	updateLeds();
-	PIT_SetTimerPeriod(&base_pit, kPIT_Chnl_0, LDVAL_trigger);//cycles
-	PIT_ClearStatusFlags(&base_pit, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
-	PIT_StartTimer(&base_pit, kPIT_Chnl_0);
+	PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, LDVAL_trigger);//cycles
+	PIT_ClearStatusFlags(PIT, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
+	PIT_StartTimer(PIT, kPIT_Chnl_0);
 }
 
 void PORTC_IRQHandler()
@@ -83,7 +71,7 @@ void PORTC_IRQHandler()
 void PORTA_IRQHandler()
 {//when switch 2 is pressed
 	PORT_ClearPinsInterruptFlags (PORTA, 1<<PORTA_IRQ_MASK);//clear irq
-	ToogleLedStatus();//change led to stop/run
+	toogleReverse();//change led reverse
 }
 
 /*
@@ -127,10 +115,6 @@ int main(void) {
 				kPORT_UnlockRegister,
 			  };
 
-    //PIT enable debug
-    pit_config_t pit_config = { true };
-	PIT_GetDefaultConfig(&pit_config);
-
 	// Sets the configuration
 	//configure LEDs
     PORT_SetPinConfig(PORTB, 21, &config);//BLUE
@@ -159,32 +143,33 @@ int main(void) {
     GPIO_PinInit(GPIOA, 4, &switch_config);
     GPIO_PinInit(GPIOC, 6, &switch_config);
 
-
+    //PIT enable debug
+    pit_config_t pit_config;
+    PIT_GetDefaultConfig(&pit_config);
     //PIT configuration
-    PIT_Init(&base_pit, &pit_config);
+    PIT_Init(PIT, &pit_config);
     ///cycles
-    PIT_SetTimerPeriod(&base_pit, kPIT_Chnl_0, (uint32_t) LDVAL_trigger);
+    PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, (uint32_t) LDVAL_trigger);
 
     //enable switches interrupt
     PORT_SetPinInterruptConfig(PORTA, 4, kPORT_InterruptFallingEdge);
     PORT_SetPinInterruptConfig(PORTC, 6, kPORT_InterruptFallingEdge);
 
-    PIT_EnableInterrupts(&base_pit, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
-    PIT_ClearStatusFlags(&base_pit, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
-    PIT_StartTimer(&base_pit, kPIT_Chnl_0);
-
     //enable interruptions
     NVIC_EnableIRQ(PORTA_IRQn);
+    NVIC_EnableIRQ(PORTC_IRQn);
+    EnableIRQ(PIT0_IRQn);
+    PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
+    PIT_ClearStatusFlags(PIT, kPIT_Chnl_0, PIT_TFLG_TIF_MASK);
+    PIT_StartTimer(PIT, kPIT_Chnl_0);
 
     //turn red led on
     GPIO_PinWrite(GPIOB, 22, LED_ON);
 
-    InitLedsPit(&base_pit);
-
     /* Enter an infinite loop, just incrementing a counter. */
     while(1)
     {
-    	
+
     }
     return 0 ;
 }
